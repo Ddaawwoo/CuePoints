@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07090f">
+  <title>CUEFLOW — cue point manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Cueflow domů">
+        <span class="brand-mark">
+          <i></i><i></i><i></i><i></i><i></i>
+        </span>
+        <span>CUE<span>FLOW</span></span>
+      </a>
+      <div class="top-actions">
+        <button class="icon-button sync-button" aria-label="Synchronizovat knihovnu">
+          <svg viewBox="0 0 24 24"><path d="M20 7h-5V2M4 17h5v5M19 12a7 7 0 0 0-12-5L4 10m16 4-3 3a7 7 0 0 1-12-5"/></svg>
+        </button>
+        <button class="avatar" aria-label="Profil uživatele">DK</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">DJ WORKSPACE</p>
+        <h1>Tvoje tracky.<br><span>Přesně na značce.</span></h1>
+        <p class="hero-copy">Připrav cue pointy ještě před setem a měj každý drop přesně tam, kde ho čekáš.</p>
+      </div>
+      <div class="hero-orbit" aria-hidden="true">
+        <div class="vinyl">
+          <span></span>
+        </div>
+        <div class="orbit-tag tag-one">8A</div>
+        <div class="orbit-tag tag-two">128</div>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Statistiky knihovny">
+      <article><strong>24</strong><span>skladeb</span></article>
+      <article><strong>86</strong><span>cue pointů</span></article>
+      <article><strong>92%</strong><span>připraveno</span></article>
+      <article><strong>127</strong><span>průměr BPM</span></article>
+    </section>
+
+    <section class="library">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">KNIHOVNA</p>
+          <h2>Připrav si další track</h2>
+        </div>
+        <button class="add-track" id="addTrackButton" aria-label="Přidat skladbu">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+
+      <div class="search-row">
+        <label class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input id="searchInput" type="search" placeholder="Hledat skladbu nebo interpreta…">
+        </label>
+        <button class="sort-button" id="sortButton" aria-label="Seřadit podle BPM">
+          <svg viewBox="0 0 24 24"><path d="M8 7h12M4 7h.01M8 12h9M4 12h.01M8 17h6M4 17h.01"/></svg>
+        </button>
+      </div>
+
+      <div class="filters" id="filters">
+        <button class="filter active" data-filter="all">Vše <span>24</span></button>
+        <button class="filter" data-filter="ready">Připravené <span>18</span></button>
+        <button class="filter" data-filter="todo">K doplnění <span>6</span></button>
+      </div>
+
+      <div class="track-list" id="trackList"></div>
+      <p class="empty-state" id="emptyState" hidden>Žádná skladba tomuto hledání neodpovídá.</p>
+    </section>
+  </main>
+
+  <aside class="player" id="player">
+    <div class="mini-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <button class="player-button" id="playerButton" aria-label="Přehrát">
+      <svg class="play-icon" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></svg>
+      <svg class="pause-icon" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg>
+    </button>
+    <div class="now-playing">
+      <span id="nowPlayingLabel">PŘEHRÁVÁ SE</span>
+      <strong id="nowPlayingTitle">Vyber skladbu</strong>
+      <small id="nowPlayingArtist">Knihovna je připravená</small>
+    </div>
+    <button class="cue-shortcut" id="cueShortcut" aria-label="Otevřít cue pointy" disabled>CUE</button>
+  </aside>
+
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <section class="cue-sheet" id="cueSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-handle"></div>
+    <header class="sheet-header">
+      <div>
+        <p class="eyebrow">CUE EDITOR</p>
+        <h2 id="sheetTitle">Název skladby</h2>
+        <p id="sheetArtist">Interpret</p>
+      </div>
+      <button class="close-button" id="closeSheet" aria-label="Zavřít editor">
+        <svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+
+    <div class="waveform-wrap">
+      <div class="waveform" id="waveform"></div>
+      <div class="playhead" id="playhead"><span></span></div>
+      <div class="wave-time"><span id="currentTime">00:00.0</span><span id="durationTime">04:12.0</span></div>
+    </div>
+
+    <div class="transport">
+      <button id="backButton" aria-label="O deset sekund zpět">
+        <svg viewBox="0 0 24 24"><path d="M5 7v5h5M6 12a7 7 0 1 0 2-5"/><text x="8" y="16">10</text></svg>
+      </button>
+      <button class="transport-play" id="editorPlay" aria-label="Přehrát">
+        <svg class="play-icon" viewBox="0 0 24 24"><path d="m9 6 9 6-9 6Z"/></svg>
+        <svg class="pause-icon" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>
+      </button>
+      <button id="forwardButton" aria-label="O deset sekund vpřed">
+        <svg viewBox="0 0 24 24"><path d="M19 7v5h-5M18 12a7 7 0 1 1-2-5"/><text x="6" y="16">10</text></svg>
+      </button>
+    </div>
+
+    <div class="cue-grid" id="cueGrid"></div>
+    <p class="sheet-hint">Klikni do waveformy a potom na cue slot. Značku můžeš kdykoliv přepsat.</p>
+    <button class="save-button" id="saveCues">
+      <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>
+      Uložit cue pointy
+    </button>
+  </section>
+
+  <div class="toast" id="toast" role="status">Cue pointy byly uloženy</div>
+  <script src="app.js"></script>
+</body>
+</html>
