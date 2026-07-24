@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CUEFLOW</string>
+    <string name="title_activity_main">CUEFLOW</string>
+    <string name="package_name">cz.cueflow.app</string>
+    <string name="custom_url_scheme">cz.cueflow.app</string>
+</resources>

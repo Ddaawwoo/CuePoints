@@ -1,0 +1,8 @@
+{
+  "appId": "cz.cueflow.app",
+  "appName": "CUEFLOW",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
