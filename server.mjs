@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 
 const root = process.cwd();
-const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript" };
+const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".png": "image/png" };
 
 createServer(async (request, response) => {
   try {
