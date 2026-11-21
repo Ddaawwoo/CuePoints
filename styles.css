@@ -277,7 +277,20 @@ body.settings-open .settings-panel { transform:translateX(0); }
 .color-setting small { color:#657086;font-size:8px; }
 .color-setting input { width:58px;height:42px;border:1px solid #30394d;border-radius:11px;background:#111722;padding:4px; }
 .wave-color-controls { display:flex;align-items:center;gap:8px; }
-.reset-settings { width:100%;height:46px;border:1px solid #313a4d;border-radius:12px;background:transparent;color:#8b95aa;font-size:10px;font-weight:700; }
+.install-setting { display:flex;flex-direction:column;gap:12px; }
+.install-setting label { margin:0 0 4px; }
+.install-setting small { color:#657086;font-size:8px;line-height:1.4;display:block;margin-bottom:2px; }
+.install-app-button {
+  width:100%;height:48px;border:1px solid var(--cyan);border-radius:12px;
+  background:linear-gradient(135deg,rgba(18,230,242,.15),rgba(18,230,242,.04));
+  color:var(--cyan);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  gap:10px;cursor:pointer;transition:all .2s ease;box-shadow:0 0 20px rgba(18,230,242,.12);
+}
+.install-app-button:hover {
+  background:var(--cyan);color:#061115;box-shadow:0 0 28px rgba(18,230,242,.35);transform:translateY(-1px);
+}
+.install-app-button svg { width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+.reset-settings { width:100%;height:46px;border:1px solid #313a4d;border-radius:12px;background:transparent;color:#8b95aa;font-size:10px;font-weight:700;margin-top:10px; }
 body[data-bg="black"] { background:#030406; }
 body[data-bg="gradient"] { background:radial-gradient(circle at 15% 15%,color-mix(in srgb,var(--cyan) 23%,transparent),transparent 38%),radial-gradient(circle at 90% 80%,color-mix(in srgb,var(--pink) 18%,transparent),transparent 40%),#07090f;background-attachment:fixed; }
 body[data-bg="image"] { background-image:linear-gradient(rgba(5,7,12,.72),rgba(5,7,12,.82)),var(--custom-bg);background-size:cover;background-position:center;background-attachment:fixed; }

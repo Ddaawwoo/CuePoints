@@ -174,8 +174,6 @@ function openEditor(track) {
 
 function closeEditor() { $("#cueEditor").hidden=true; state.selected=null; renderTracks(); }
 function toast(text) { $("#toast").textContent=text;$("#toast").classList.add("show");setTimeout(()=>$("#toast").classList.remove("show"),2400); }
-function openImport(){document.body.classList.add("import-open")}
-function closeImport(){document.body.classList.remove("import-open")}
 function openSettings(){document.body.classList.add("settings-open")}
 function closeSettings(){document.body.classList.remove("settings-open")}
 
@@ -277,14 +275,14 @@ $("#cueGrid").addEventListener("click",e=>{
 });
 $("#autoCues").addEventListener("click",buildAutomaticCues);
 $("#saveCues").addEventListener("click",()=>{renderTracks();toast("8 cue pointů bylo uloženo")});
-$("#addTrackButton").addEventListener("click",openImport);
-$("#emptyImportButton").addEventListener("click",openImport);
-$("#closeImport").addEventListener("click",closeImport);
-$("#importBackdrop").addEventListener("click",closeImport);
-$("#deviceImport").addEventListener("click",()=>$("#audioInput").click());
+function triggerDeviceImport() {
+  $("#audioInput").click();
+}
+
+$("#addTrackButton").addEventListener("click", triggerDeviceImport);
+$("#emptyImportButton").addEventListener("click", triggerDeviceImport);
 $("#audioInput").addEventListener("change",async e=>{
   const files=[...e.target.files];
-  closeImport();
   for(const file of files) await analyzeFile(file);
   if(files.length) toast(files.length===1?"Skladba byla přidána do knihovny":`${files.length} skladeb bylo přidáno do knihovny`);
   e.target.value="";
@@ -292,7 +290,7 @@ $("#audioInput").addEventListener("change",async e=>{
 document.querySelectorAll("[data-cloud]").forEach(b=>b.addEventListener("click",()=>{const name=b.dataset.cloud==="mega"?"MEGA":"Dropbox";toast(`${name}: pro ostré připojení vlož API klíč služby`)}));
 document.querySelectorAll(".source-button[data-source]").forEach(b=>b.addEventListener("click",()=>{
   const source=b.dataset.source;
-  if(source==="device") { openImport(); return; }
+  if(source==="device") { triggerDeviceImport(); return; }
   const name=source==="mega"?"MEGA":source==="dropbox"?"Dropbox":"Google Drive";
   toast(`${name}: připojení vyžaduje API klíč služby`);
 }));
@@ -320,7 +318,50 @@ $("#zoomOut").addEventListener("click",()=>setWaveZoom(state.zoom-.5));
 $("#zoomIn").addEventListener("click",()=>setWaveZoom(state.zoom+.5));
 audio.addEventListener("timeupdate",()=>{state.position=audio.currentTime;updatePosition()});
 audio.addEventListener("ended",()=>setPlaying(false));
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeImport();closeSettings();closeEditor()}if(e.code==="Space"&&!e.target.matches("input")){e.preventDefault();setPlaying(!state.playing)}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSettings();closeEditor()}if(e.code==="Space"&&!e.target.matches("input")){e.preventDefault();setPlaying(!state.playing)}});
+
+let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  toast("Aplikace byla úspěšně nainstalována do zařízení");
+});
+
+const installBtn = $("#installAppButton");
+if (installBtn) {
+  installBtn.addEventListener("click", async () => {
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    if (isStandalone) {
+      toast("Aplikace je již v zařízení nainstalována");
+      return;
+    }
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === "accepted") {
+        toast("Instalace potvrzena");
+      }
+      deferredInstallPrompt = null;
+    } else {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        toast("V Safari klepněte na tlačítko Sdílet a zvolte 'Přidat na plochu'");
+      } else {
+        toast("V nabídce prohlížeče (⋮) zvolte 'Instalovat aplikaci' nebo 'Přidat na plochu'");
+      }
+    }
+  });
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 
 applyAppearance(JSON.parse(localStorage.getItem("cueflowAppearance")||"{}"));
 renderTracks();
